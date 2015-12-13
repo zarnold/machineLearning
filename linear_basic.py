@@ -3,6 +3,8 @@
 # may use anothers
 import pandas as pd
 import numpy as np
+import pylab as plt
+
 
 # The linear model is one of the most fundamentals
 # It  just is a fit of a line in a cloud of points
@@ -27,6 +29,8 @@ e=28
 f=12
 
 Y=a*U+b*V+c*W
+plt.scatter(X.T,np.log(X))
+plt.show()
 
 # Now see how the lienar regression is able to find 
 # your build

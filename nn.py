@@ -46,7 +46,7 @@ def compute_output(model,x):
   model = { 'W1': W1, 'a1':a1, 'b1': b1, 'W2': W2, 'b2': b2}
   return probs,model
 
-# Loss function for softmax is entropy
+# Loss function for softmax is cross entropy
 def compute_cross_entropy(y,y_hat):
   lp = -np.log(y_hat[range(n_samples), y])
   data_loss = np.sum(lp)
@@ -56,18 +56,24 @@ def compute_loss(model):
   W1, b1, W2, b2 = model['W1'], model['b1'], model['W2'], model['b2']
   p,m=compute_output(model,X)
   loss=compute_cross_entropy(Y,p)
+  # Average
   return 1./n_samples*loss
 
+# just compute an ouput and take the most probable
 def predict_model(model,x):
   p,m=compute_output(model,x)
   return np.argmax(p,axis=1)
 
+# backprop is computing
+# of the derivative in backward
 def backprop(output,model):
   W1, b1, W2, b2, a1 = model['W1'], model['b1'], model['W2'], model['b2'], model['a1']
   delta3 = output
   delta3[range(n_samples), Y] -= 1
   dW2 = (a1.T).dot(delta3)
   db2 = np.sum(delta3, axis=0, keepdims=True)
+  # note that is because derivative of tanh is 1-tanh2
+  # with activation function, you should recompute 
   delta2 = delta3.dot(W2.T) * (1 - np.power(a1, 2))
   dW1 = np.dot(X.T, delta2)
   db1 = np.sum(delta2, axis=0)
@@ -81,6 +87,7 @@ def backprop(output,model):
   return model       
   
 
+# train the network
 def build_model(size_hidden=3,n_pass=40000):
   np.random.seed(0)
   W1 = np.random.randn(input_size, size_hidden) / np.sqrt(input_size)
@@ -96,6 +103,10 @@ def build_model(size_hidden=3,n_pass=40000):
   return model
     
 model=build_model(size_hidden=5)
+
+# now you can predict and cross valid, even 
+# do hyperparameter search
+# by using the loss function
 plot_decision_boundary(lambda x: predict_model(model, x))
 
     

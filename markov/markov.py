@@ -21,8 +21,9 @@ class MarkovBot():
 		df['lines']=range(len(df))
 		df.columns=range(deepness+1)
 		self.vocabulaire=df.groupby(range(deepness)).count().reset_index()
-    def talk(self,firstWord):
-		print vocabulaire[(vocabulaire[0]==firstWord)]
+
+	def talk(self,firstWord):
+		print self.vocabulaire[(self.vocabulaire[0]==firstWord)]
 
 
 nicolas=MarkovBot('sarkozy.txt') 

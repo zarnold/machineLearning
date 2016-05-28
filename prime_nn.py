@@ -120,10 +120,13 @@ w_h = init_weights([N_DIGITS, NUM_HIDDEN])
 # w_o est la proba d'etre un nombre premier
 w_o = init_weights([NUM_HIDDEN, 2])
 
-# et la partie interessante donc, ou l'on 
+# et là, la partie interessante donc, ou l'on 
 # fabrique la structure du reseau
-# de neurone que l'on pense la plsu adaptée pour notre probleme
+# de neurone que l'on pense la plus adaptée pour notre probleme
 # ensuite, on le laissera grandir tout seul
+# ici, le reseau n'a qu'une couche cachée, ce qui est sans doute un peu 
+# léger
+
 def model(X, w_h, w_o):
   # la base : la sortie du réseau est 
   # l'entree une fois passé dans le reseau de neurone  
@@ -169,20 +172,39 @@ pred = tf.argmax(ness, 1)
 # allez c'est partie.
 # on a tout préparé, on lance l'entrainement
 
+## note: on fait gaffe a bien apprendre sur une partie
+## et en cacher une autre
+# sinon il ne s'agit asp d'apprentissage mais de mémorisation
+# c'est a dire d'overfitting
+
+split = int(SAMPLE_SIZE/2)
+Xtr = X[:split]
+Ytr = Y[:split]
+Xte = X[split:]
+Yte = Y[split:]
+
 with tf.Session() as sess:
     tf.initialize_all_variables().run()
     for c_round in range(N_ROUND):
-      p = np.random.permutation(range(len(X)))
-      X, Y = X[p], Y[p]
+      p = np.random.permutation(range(len(Xtr)))
+      Xtr, Ytr = Xtr[p], Ytr[p]
       print("round %d"%c_round)
-      for start in range(0, len(X), BATCH_SIZE):
+      for start in range(0, len(Xtr), BATCH_SIZE):
 	end = start + BATCH_SIZE
-	sess.run(train, feed_dict={I: X[start:end],O: Y[start:end]})
-      print(c_round, np.mean(np.argmax(Y, axis=1) == sess.run(pred, feed_dict={I: X, O: Y})))
+	sess.run(train, feed_dict={I: Xtr[start:end],O: Ytr[start:end]})
+      print(c_round, np.mean(np.argmax(Ytr, axis=1) == sess.run(pred, feed_dict={I: Xtr, O: Ytr})))
+      print("prediction for never seen number")
+      print(c_round, np.mean(np.argmax(Yte, axis=1) == sess.run(pred, feed_dict={I: Xte})))
     # Une fois entrainé, voyons ce que ness predit avec des nouveaux chiffres
-    ness_said = sess.run(pred, feed_dict = {I: X})
+    ness_said = sess.run(pred, feed_dict = {I: Xtr})
+    ness_try  = sess.run(pred, feed_dict = {I: Xte})
 
-
-df = pd.DataFrame({'nombre':map(binary_decode,X), 'proposition':ness_said.astype('int'),'verite':Y[:,1].astype('int')})
 print np.mean(ness_said)
+
+df = pd.DataFrame({'nombre':map(binary_decode,Xtr), 'proposition':ness_said.astype('int'),'verite':Ytr[:,1].astype('int')})
 df.sort('nombre').to_csv('ness_proposition_for_prime.csv', index=False)
+
+df = pd.DataFrame({'nombre':map(binary_decode,Xte), 'proposition':ness_said.astype('int'),'verite':Yte[:,1].astype('int')})
+df.sort('nombre').to_csv('ness_proposition_for_unknown_prime.csv', index=False)
+
+##  Maintenant, testons avec des nombres jamais vu

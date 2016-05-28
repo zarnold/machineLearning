@@ -1,22 +1,46 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+
 import pandas as pd
 import numpy as np
 import tensorflow as tf
 
 N_DIGITS	    = 10
 SAMPLE_SIZE	    = 2**N_DIGITS
-N_ROUND		    = 2000
+N_ROUND		    = 20000
 BATCH_SIZE	    = 128
 
 
 
 
-# d'une maniere generale, on p
+# d'une maniere generale, ce code permet de voir si 
+# un réseau de neurone est capable d'apprendre une certaine propriété des nombres
+# la propriété est fabriquée a la main  dans la fonction eratosthene
+# et peut etre n'importe quoi
+# Pour les propriétés telles que "divisible par 2 " ou "divisible par 5"
+# les réseaux s'en sortent tres bien
+# ( essayez en decommentant la ligne) concernéé
+# pour la primalité, c'est moins trivial.
+
+# Ce code permet aussi de voir la démarche générale
+# quand on veut créer un reseau de neurone (tres basique )
+# avec Tensorflow, l'outil de google.
+
+# le code est volontairement simple pour etre didactique.
+
+
+# Note de triche : on test la qualité de notre modele sur l'echantillon 
+# surlequel on a entrainé le reseau
+# C'est donc completement overfitee et abusé.
+
+
+
 # pas la methode la plus rapide pour savoir si un nombre est premier mais la plus courte en code
 # d'autant plus qu'elle permet de sauvegarder les résultats
 
+# Note : pour des raisons de simplicité, cette fonction retourne
+# la primalité en indice 0 et la non primalité en indice 1
 def eratosthene(sample_size = 50000) :
   # le crible d'eratostrucmescouilles commence avec des zeros partout
   erth = np.zeros(sample_size)
@@ -25,8 +49,9 @@ def eratosthene(sample_size = 50000) :
     # pour tous les multiples de i, on met un "1" dans le tableau
     # qui n'est donc pas un nombre premier
     if i>1 :
-      #erth[range(sample_size)[i*2::i]] = 1
-      erth[range(sample_size)[::3]] = 1
+      erth[range(sample_size)[i*2::i]] = 1
+      #decommente pour apprendre un cas simple : les divisions par 3
+      #erth[range(sample_size)[::3]] = 1
   return erth
 
 def is_prime(i,crible):
@@ -158,6 +183,6 @@ with tf.Session() as sess:
     ness_said = sess.run(pred, feed_dict = {I: X})
 
 
-df = pd.DataFrame({'nombre':map(binary_decode,X), 'propriete':ness_said.astype('int')})
+df = pd.DataFrame({'nombre':map(binary_decode,X), 'proposition':ness_said.astype('int'),'verite':Y[:,1].astype('int')})
 print np.mean(ness_said)
-df.to_csv('ness_proposition_for_prime.csv', index=False)
+df.sort('nombre').to_csv('ness_proposition_for_prime.csv', index=False)

@@ -6,7 +6,8 @@ import pandas as pd
 import numpy as np
 import tensorflow as tf
 
-N_DIGITS	    = 10
+# more digit = more time but better learning
+N_DIGITS	    = 12
 SAMPLE_SIZE	    = 2**N_DIGITS
 N_ROUND		    = 20000
 BATCH_SIZE	    = 128

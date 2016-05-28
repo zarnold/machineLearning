@@ -1,16 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import pandas as pd
 import numpy as np
 import tensorflow as tf
 
-SAMPLE_SIZE	    = 50000
-N_DIGITS	    = 32
-N_ROUND		    = 200
+N_DIGITS	    = 10
+SAMPLE_SIZE	    = 2**N_DIGITS
+N_ROUND		    = 2000
 BATCH_SIZE	    = 128
 
 
 
+
+# d'une maniere generale, on p
 # pas la methode la plus rapide pour savoir si un nombre est premier mais la plus courte en code
 # d'autant plus qu'elle permet de sauvegarder les résultats
 
@@ -22,15 +25,22 @@ def eratosthene(sample_size = 50000) :
     # pour tous les multiples de i, on met un "1" dans le tableau
     # qui n'est donc pas un nombre premier
     if i>1 :
-      erth[range(sample_size)[i*2::i]] = 1
+      #erth[range(sample_size)[i*2::i]] = 1
+      erth[range(sample_size)[::3]] = 1
   return erth
 
 def is_prime(i,crible):
-  return 1-crible[i]
+  return (1-crible[i],crible[i])
 
 ## return un tableau de bit de l'encodage de i en binaire
-def binary_encode(i, num_digits = 32):
+def binary_encode(i, num_digits = N_DIGITS):
   return np.array([ i >> d & 1 for d in range(num_digits)])
+
+def binary_decode(i):
+  out = 0
+  for b in i[::-1]:
+    out = (out << 1) | b
+  return out
 
 ## Comment initialiser les reseaux de neurones ?
 ## l'eternel debat. Moi perso, c'est à la gueule
@@ -39,7 +49,7 @@ def init_weights(shape):
 
 
 ####################################################
-## init
+# init
 print("Making primes")
 crible = eratosthene(SAMPLE_SIZE)
 
@@ -58,7 +68,7 @@ X = np.array(map(binary_encode,range(SAMPLE_SIZE)))
 # ce qu'est sensé répondre le réseau de neurone
 # aka si un nombre est premier ou pas 
 
-pritn("set up")
+print("set up")
 Y = np.array([ is_prime(i,crible) for i in range(SAMPLE_SIZE)])
 
 
@@ -78,12 +88,12 @@ NUM_HIDDEN = 100
 # parce que le reseau va apprendre des probabilité
 #  et non pas des certitudes
 I = tf.placeholder("float", [None, N_DIGITS])
-O = tf.placeholder("float", [None, 1])
+O = tf.placeholder("float", [None, 2])
 
 # w_h represente les poids des connexions neuronales. C'est ca qui va etre appris
 w_h = init_weights([N_DIGITS, NUM_HIDDEN])
 # w_o est la proba d'etre un nombre premier
-w_o = init_weights([NUM_HIDDEN, 1])
+w_o = init_weights([NUM_HIDDEN, 2])
 
 # et la partie interessante donc, ou l'on 
 # fabrique la structure du reseau
@@ -128,16 +138,26 @@ cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(ness, O))
 
 train = tf.train.GradientDescentOptimizer(0.05).minimize(cost)
 
+# pour simplifier, voyons quand meme si c'est plutot un prime ou plutot pas
+pred = tf.argmax(ness, 1)
+
 # allez c'est partie.
 # on a tout préparé, on lance l'entrainement
 
 with tf.Session() as sess:
     tf.initialize_all_variables().run()
     for c_round in range(N_ROUND):
+      p = np.random.permutation(range(len(X)))
+      X, Y = X[p], Y[p]
+      print("round %d"%c_round)
       for start in range(0, len(X), BATCH_SIZE):
 	end = start + BATCH_SIZE
-	sess.run(train, feed_dict={X: X[start:end],Y: Y[start:end]})
-    print(c_round, np.mean(np.argmax(O, axis=1) == sess.run(predict_op, feed_dict={X: X, Y: Y})))
-      
+	sess.run(train, feed_dict={I: X[start:end],O: Y[start:end]})
+      print(c_round, np.mean(np.argmax(Y, axis=1) == sess.run(pred, feed_dict={I: X, O: Y})))
+    # Une fois entrainé, voyons ce que ness predit avec des nouveaux chiffres
+    ness_said = sess.run(pred, feed_dict = {I: X})
 
 
+df = pd.DataFrame({'nombre':map(binary_decode,X), 'propriete':ness_said.astype('int')})
+print np.mean(ness_said)
+df.to_csv('ness_proposition_for_prime.csv', index=False)

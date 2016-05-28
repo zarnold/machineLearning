@@ -7,9 +7,9 @@ import numpy as np
 import tensorflow as tf
 
 # more digit = more time but better learning
-N_DIGITS	    = 12
+N_DIGITS	    = 15
 SAMPLE_SIZE	    = 2**N_DIGITS
-N_ROUND		    = 20000
+N_ROUND		    = 30000
 BATCH_SIZE	    = 128
 
 
@@ -47,6 +47,7 @@ def eratosthene(sample_size = 50000) :
   erth = np.zeros(sample_size)
   # pour tous les entiers entre 0 et n/2
   for i in range(sample_size/2):
+    if(i%100 == 0) :  print i
     # pour tous les multiples de i, on met un "1" dans le tableau
     # qui n'est donc pas un nombre premier
     if i>1 :
@@ -78,6 +79,11 @@ def init_weights(shape):
 # init
 print("Making primes")
 crible = eratosthene(SAMPLE_SIZE)
+
+# autant sauver les primes deja calculés tan tqu'a faire
+idx = range(0,SAMPLE_SIZE)
+sf = np.vstack([idx,crible]).astype('int')
+np.savetxt('primes.csv', sf.T,fmt="%d",delimiter=',')
 
 ## maintenant, le réseau de neurone
 ### on construit l'entrainement
@@ -189,12 +195,12 @@ with tf.Session() as sess:
     for c_round in range(N_ROUND):
       p = np.random.permutation(range(len(Xtr)))
       Xtr, Ytr = Xtr[p], Ytr[p]
-      print("round %d"%c_round)
+      print("***********  round %d ****** "%c_round)
       for start in range(0, len(Xtr), BATCH_SIZE):
 	end = start + BATCH_SIZE
 	sess.run(train, feed_dict={I: Xtr[start:end],O: Ytr[start:end]})
       print(c_round, np.mean(np.argmax(Ytr, axis=1) == sess.run(pred, feed_dict={I: Xtr, O: Ytr})))
-      print("prediction for never seen number")
+      print("** Prediction for never seen number")
       print(c_round, np.mean(np.argmax(Yte, axis=1) == sess.run(pred, feed_dict={I: Xte})))
     # Une fois entrainé, voyons ce que ness predit avec des nouveaux chiffres
     ness_said = sess.run(pred, feed_dict = {I: Xtr})

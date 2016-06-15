@@ -1,3 +1,5 @@
+## Try to solve the salesman problem with kmeans
+
 import numpy as np
 import pylab as plt
 
@@ -20,7 +22,7 @@ plt.show()
 
 
 
-#### Todo : should use an interation of kmeans fit
+#### Todo : should use a recursive  iteration of kmeans fit
 ## Use a Tree data structure to keep trak of labels inside clusters
 ## Solve
 

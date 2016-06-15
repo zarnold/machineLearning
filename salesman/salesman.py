@@ -21,6 +21,7 @@ plt.show()
 
 
 #### Todo : should use an interation of kmeans fit
+## Use a Tree data structure to keep trak of labels inside clusters
 ## Solve
 
 km_0 = KMeans(init='k-means++', n_clusters=km_sizes, n_init=10)
@@ -48,3 +49,6 @@ for current_cluster in set(km_0.labels_):
 
 ## Once the cluster is small enough ( less than min_point_to_heuristique), solve it 
 ## with brute force
+
+
+## When a cluster is solve, move to the nearest cluster insde the parent cluster

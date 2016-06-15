@@ -7,7 +7,7 @@ import numpy as np
 import tensorflow as tf
 
 # more digit = more time but better learning
-N_DIGITS	    = 15
+N_DIGITS	    = 16
 SAMPLE_SIZE	    = 2**N_DIGITS
 N_ROUND		    = 30000
 BATCH_SIZE	    = 128
@@ -108,9 +108,8 @@ Y = np.array([ is_prime(i,crible) for i in range(SAMPLE_SIZE)])
 # le truc de google
 
 # Combien de neurones ?
-# disons 100.
 # on pourra toujours faire du Random Grid search 
-NUM_HIDDEN = 100
+NUM_HIDDEN = 18
 
 # Ca c'est du formalisme de tensorflow
 # pour construie le reseau.  ON s'en fout
@@ -200,7 +199,7 @@ with tf.Session() as sess:
 	end = start + BATCH_SIZE
 	sess.run(train, feed_dict={I: Xtr[start:end],O: Ytr[start:end]})
       print(c_round, np.mean(np.argmax(Ytr, axis=1) == sess.run(pred, feed_dict={I: Xtr, O: Ytr})))
-      print("** Prediction for never seen number")
+      print("** Pediction for never seen number")
       print(c_round, np.mean(np.argmax(Yte, axis=1) == sess.run(pred, feed_dict={I: Xte})))
     # Une fois entrainé, voyons ce que ness predit avec des nouveaux chiffres
     ness_said = sess.run(pred, feed_dict = {I: Xtr})

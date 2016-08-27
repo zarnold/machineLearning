@@ -55,9 +55,14 @@ plt.plot([nround*x for x in pka], c='g')
 plt.show()
 
 ## On augmente le nb de round pour la qualité de la simulation
-nround=1E8
+nround=1E7
 kb = np.random.binomial(nb,pb,nround)
 ka = np.random.binomial(na,pa,nround)
+
+plt.hist(ka,bins=100,label="nombre de succes avec la methode subtile")
+plt.hist(kb,bins=100,label="nombre de succes avec la methode bourrine")
+plt.legend()
+plt.show()
 
 
 result = 0+(ka>kb).sum()

@@ -42,12 +42,21 @@ cluster_level = np.hstack([country,km_0.labels_.reshape(-1,1)])
 
 for current_cluster in set(km_0.labels_):
   ## new sub city
-  cluster_level = np.hstack([cluster_level,np.zeros((300,1))])
+  cluster_level = np.hstack([cluster_level,km_sizes+1 + np.zeros((300,1))])
   sub_urbs = country[np.where(km_0.labels_==current_cluster)]
+  print("Average points in cluster : %f"%(1.*len(sub_urbs)/km_sizes))
   sub_km = KMeans(init='k-means++', n_clusters=km_sizes, n_init=10)
   sub_km.fit(sub_urbs)
-  cluster_level[:,-1][np.where(km_0.labels_==0)] = sub_km.labels_
+  cluster_level[:,-1][np.where(km_0.labels_== current_cluster)] = sub_km.labels_
 
+## visual check
+plt.figure()
+for c in set(km_0.labels_):
+  print c+1
+  plt.subplot(2,2,c+1)
+  plt.scatter(country[:,0],country[:,1],c=cluster_level[:,3+c])
+
+plt.show()
 
 ## Once the cluster is small enough ( less than min_point_to_heuristique), solve it 
 ## with brute force

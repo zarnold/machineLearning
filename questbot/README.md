@@ -17,7 +17,9 @@ Ainsi qu'une base privée et confidentiel de textes fournis par un auteur de SF 
 
 ### Chaines de markov
 
-par caracteres et par mot
+Les bots a base de chaines de markov apprennent juste la probabilité d'un caractères à partir des n précédents. C'est facile a implémenter et relativement puissant par contre ca ne capture aucune composante sémantique. 
+
+Voir markov.py pour une implémentation type.
 
 ### Word embedding
 

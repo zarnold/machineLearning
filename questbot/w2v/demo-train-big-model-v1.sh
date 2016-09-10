@@ -19,12 +19,12 @@ normalize_text() {
 mkdir word2vec
 cd word2vec
 
-wget http://www.statmt.org/wmt14/training-monolingual-news-crawl/news.2012.en.shuffled.gz
-wget http://www.statmt.org/wmt14/training-monolingual-news-crawl/news.2013.en.shuffled.gz
-gzip -d news.2012.en.shuffled.gz
-gzip -d news.2013.en.shuffled.gz
-normalize_text < news.2012.en.shuffled > data.txt
-normalize_text < news.2013.en.shuffled >> data.txt
+wget http://www.statmt.org/wmt14/training-monolingual-news-crawl/news.2012.fr.shuffled.gz
+wget http://www.statmt.org/wmt14/training-monolingual-news-crawl/news.2013.fr.shuffled.gz
+gzip -d news.2012.fr.shuffled.gz
+gzip -d news.2013.fr.shuffled.gz
+normalize_text < news.2012.fr.shuffled > data.txt
+normalize_text < news.2013.fr.shuffled >> data.txt
 
 wget http://www.statmt.org/lm-benchmark/1-billion-word-language-modeling-benchmark-r13output.tar.gz
 tar -xvf 1-billion-word-language-modeling-benchmark-r13output.tar.gz

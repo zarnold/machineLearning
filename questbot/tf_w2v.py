@@ -4,6 +4,7 @@
 from  collections import Counter
 from  collections import deque
 import math
+import re
 import os
 import random
 import zipfile
@@ -28,7 +29,7 @@ class WvBot:
     ## First word is UNK 
     count=[['UNK',1]]
     ## count occurence of each most frequent word
-    count.extend(collections.Counter(self.text).most_common(self.vocabulary_size - 1))
+    count.extend(Counter(self.text).most_common(self.vocabulary_size - 1))
     ## build an index
     d = dict()
     for w,c in count:
@@ -81,3 +82,4 @@ wb = WvBot(PATH+'antioch.txt')
 b,l = wb.make_batch(100,1,3)
 
 
+print b,l

@@ -79,7 +79,9 @@ class WvBot:
 
 
 wb = WvBot(PATH+'antioch.txt')
-b,l = wb.make_batch(100,1,3)
+batch,labels = wb.make_batch(12,3,6)
 
+for i in range(64):
+  print(batch[i], wb.reverse_d[batch[i]],
+      '->', labels[i, 0], wb.reverse_d[labels[i, 0]])
 
-print b,l

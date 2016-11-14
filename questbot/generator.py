@@ -32,6 +32,11 @@ m = tflearn.SequenceGenerator(g, dictionary=char_idx,
                               seq_maxlen=maxlen,
                               clip_gradients=5.0,
                               checkpoint_path='classiques')
+#u = tflearn.SequenceGenerator(g, dictionary=char_idx,
+                              seq_maxlen=maxlen,
+                              clip_gradients=5.0,
+                              checkpoint_path='classiques')
+
 
 def talk():
   seed = random_sequence_from_textfile(DATA_PATH + path, maxlen)

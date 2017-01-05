@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import numpy as np
+
 ##============ apply neural net on graph
 import json
 class node:
@@ -10,16 +12,32 @@ class node:
     self.posX  =posX
     self.posY = posY
 
+class edge:
+  def __init__(self,origin,destination, weight=1):
+     self.origin = origin
+     self.destination = destination 
+
 
 class nGraph:
     def __init__(self):
        self.nodes=[]
-       self.links=[]
+       self.edges=[]
     def clear(self):
        self.nodes=[]
-       self.links=[]
+       self.edges=[]
     def addNode(self,node):
        self.nodes.append(node)
+    def addEdge(self, origin, destination):
+      oIdx = self.getNodeIdx(origin)
+      dIdx = self.getNodeIdx(destination)
+      e=edge(oIdx,dIdx) 
+      self.edges.append(e)
+    def asMatrix(self):
+      graphMatrix = np.zeros((len(self.nodes),len(self.nodes)))
+      for e in self.edges:
+        graphMatrix[e.origin,e.destination] = 1
+        graphMatrix[e.destination,e.origin] = 1
+      return graphMatrix
     def getNodeIdx(self,nodeName):
        for idx,val in enumerate(self.nodes):
          if nodeName == val.name:
@@ -28,17 +46,17 @@ class nGraph:
     def dump(self):
       g={}
       nodes=[]
-      for name in ['paul','eric','remi']:
+      for node in self.nodes:
         n={}
-        n['name']=name
-        n['group']=1
+        n['name']=node.name
+        n['group']=node.value
         nodes.append(n)
       g['nodes'] = nodes
       links=[]
-      for link in[(2,0),(2,1)]:
+      for e in self.edges:
         l={}
-        l['source'] = link[0]
-	l['target'] = link[1]
+        l['source'] = e.origin
+	l['target'] = e.destination
         links.append(l)
       g['links']=links
       print g
@@ -54,6 +72,10 @@ gTest.addNode(node("Jean"))
 gTest.addNode(node("Lea"))
 gTest.addNode(node("Marc"))
 
-
+gTest.addEdge("Luc","Lea")
+gTest.addEdge("Luc","Marc")
+gTest.addEdge("Jean","Marc")
+gTest.addEdge("Lea","Marc")
+gTest.dump()
 
 

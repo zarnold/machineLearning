@@ -3,10 +3,28 @@
 
 ##============ apply neural net on graph
 import json
+class node:
+  def __init__(self, name="node", value=1,posX=1,posY=1):
+    self.name=name
+    self.value=value
+    self.posX  =posX
+    self.posY = posY
+
 
 class nGraph:
     def __init__(self):
-       nodes=[]
+       self.nodes=[]
+       self.links=[]
+    def clear(self):
+       self.nodes=[]
+       self.links=[]
+    def addNode(self,node):
+       self.nodes.append(node)
+    def getNodeIdx(self,nodeName):
+       for idx,val in enumerate(self.nodes):
+         if nodeName == val.name:
+           return idx
+       return -1
     def dump(self):
       g={}
       nodes=[]
@@ -31,8 +49,10 @@ class nGraph:
 
 
 gTest = nGraph()
-gTest.dump()
-
+gTest.addNode(node("Luc"))
+gTest.addNode(node("Jean"))
+gTest.addNode(node("Lea"))
+gTest.addNode(node("Marc"))
 
 
 

@@ -29,7 +29,10 @@ def makeWindows(s):
     start+=SKIP_WINDOW
   return w
 
-
+def hoten(word,vd):
+  u=np.zeros(len(vd)-1)
+  u[vd[word]] = 1 
+  return u
 
 DATA_PATH="/home/arnold/Data/datasets-text/"
 source = "classiques"
@@ -41,7 +44,7 @@ doc=cleanText(text)
 vocab=set(re.findall(r"[\w']+",doc))
 
 rev_dict = dict(enumerate(vocab))
-v_dict = { v:k for k,v in  v_dict.items() }
+v_dict = { v:k for k,v in  rev_dict.items() }
 
 
 doc=doc.split('\n')
@@ -50,8 +53,9 @@ doc=[item for sublist in doc for item in sublist]
 splitDoc = map(makeWindows,doc)
 docX=[item for sublist in splitDoc for item in sublist]
 
-X=map(lambda t: t[0],docX)
-Y=map(lambda t: t[1],docX)
+X=np.array(map(lambda t: t[0],docX))
+Y=np.array(map(lambda t: t[1],docX))
+
 
 
 # TEST. DELETE AFTER THIS LINE
